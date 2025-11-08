@@ -8,75 +8,7 @@ import { AuthService } from '../auth.service';
   selector: 'app-signup',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  template: `
-   <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-indigo-100 px-4">
-      <div class="w-full max-w-md bg-white shadow-xl rounded-2xl p-8">
-        <h2 class="text-3xl font-bold text-center text-indigo-700 mb-6">Create Account</h2>
-
-        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
-          <!-- Name -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-            <input
-              type="text"
-              formControlName="name"
-              placeholder="John Doe"
-              class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
-            />
-            <p *ngIf="form.get('name')?.invalid && form.get('name')?.touched" class="text-red-500 text-sm mt-1">
-              Name is required
-            </p>
-          </div>
-
-          <!-- Email -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-            <input
-              type="email"
-              formControlName="email"
-              placeholder="you@example.com"
-              class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
-            />
-            <p *ngIf="form.get('email')?.invalid && form.get('email')?.touched" class="text-red-500 text-sm mt-1">
-              Valid email required
-            </p>
-          </div>
-
-          <!-- Password -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input
-              type="password"
-              formControlName="password"
-              placeholder="••••••••"
-              class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
-            />
-            <p *ngIf="form.get('password')?.invalid && form.get('password')?.touched" class="text-red-500 text-sm mt-1">
-              Password is required
-            </p>
-          </div>
-
-          <!-- Submit -->
-          <button
-            type="submit"
-            [disabled]="form.invalid || loading"
-            class="w-full bg-indigo-600 text-white font-semibold py-2.5 rounded-lg hover:bg-indigo-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
-          >
-            {{ loading ? 'Creating Account...' : 'Sign Up' }}
-          </button>
-        </form>
-
-        <!-- Error -->
-        <p *ngIf="error" class="text-center text-red-500 text-sm mt-4">{{ error }}</p>
-
-        <!-- Link -->
-        <p class="text-center text-sm text-gray-600 mt-6">
-          Already have an account?
-          <a routerLink="/login" class="text-indigo-600 font-medium hover:underline">Log In</a>
-        </p>
-      </div>
-    </div>
-  `
+  templateUrl: 'signup.html'
 })
 export class SignupComponent {
 
@@ -101,22 +33,34 @@ export class SignupComponent {
   }
 
   onSubmit(): void {
+    // 👉 যদি ফর্মটি অবৈধ হয় (required ফিল্ড ফাঁকা বা ভুল ইনপুট), কিছুই করো না
     if (this.form.invalid) return;
 
+    // 🔄 সাবমিট শুরু — লোডিং স্টেট true করে দিচ্ছি (বাটন ডিজেবল থাকবে)
     this.loading = true;
+
+    // ❌ আগের কোনো এরর থাকলে তা রিসেট করে দিচ্ছি
     this.error = '';
 
+    // 🚀 AuthService-এর signup() মেথডে ফর্মের ভ্যালু পাঠাচ্ছি (API কল হবে)
     this.authService.signup(this.form.value as any).subscribe({
+      // ✅ যদি সার্ভার থেকে সফল রেসপন্স আসে
       next: () => {
+        // ⏹️ লোডিং বন্ধ করো
         this.loading = false;
-        // Either go to dashboard directly or to login:
+        // 🏠 সফল হলে ইউজারকে ড্যাশবোর্ডে রিডাইরেক্ট করো
         this.router.navigate(['/dashboard']);
       },
+      // ❌ যদি কোনো এরর হয় (যেমন সার্ভার বন্ধ বা ব্যাড রেসপন্স)
       error: (err) => {
+        // ⏹️ লোডিং বন্ধ করো
         this.loading = false;
+        // ⚠️ এরর মেসেজ সেট করো যাতে ইউজার দেখতে পায়
         this.error = 'Signup failed. Check mock server.';
+        // 🪵 কনসোলে এরর প্রিন্ট করো (ডিবাগ করার জন্য)
         console.error(err);
       }
     });
   }
+
 }
