@@ -4,6 +4,8 @@
 
 ### 🏥 **Hospital Management System — RBAC Test Matrix**
 
+Admin user : admin@example.com / 12345
+
 | Module                              | Route                   | Allowed Roles                             | ✅ Positive Test Case (Expected: Access Granted)                                                                                          | ❌ Negative Test Case (Expected: Access Denied)                                                                                 |
 | ----------------------------------- | ----------------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | **Patient Registration**            | `/patient-registration` | receptionist, admin                       | Login as **Receptionist Meena ([receptionist@example.com](mailto:receptionist@example.com))** → Should access patient registration form. | Login as **Lab Technician Ravi ([labtech@example.com](mailto:labtech@example.com))** → Should get "Access Denied" or redirect. |
