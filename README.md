@@ -1,59 +1,78 @@
-# V21
+ 
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.4.
+---
 
-## Development server
+### 🏥 **Hospital Management System — RBAC Test Matrix**
 
-To start a local development server, run:
+| Module                              | Route                   | Allowed Roles                             | ✅ Positive Test Case (Expected: Access Granted)                                                                                          | ❌ Negative Test Case (Expected: Access Denied)                                                                                 |
+| ----------------------------------- | ----------------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| **Patient Registration**            | `/patient-registration` | receptionist, admin                       | Login as **Receptionist Meena ([receptionist@example.com](mailto:receptionist@example.com))** → Should access patient registration form. | Login as **Lab Technician Ravi ([labtech@example.com](mailto:labtech@example.com))** → Should get "Access Denied" or redirect. |
+| **Appointments & Scheduling**       | `/appointments`         | receptionist, doctor, admin               | **Dr. Priya Sharma ([doctor@example.com](mailto:doctor@example.com))** → Should view appointments list.                                  | **Billing Executive Suresh ([billing@example.com](mailto:billing@example.com))** → Should be denied.                           |
+| **OPD (Outpatient)**                | `/opd`                  | doctor, nurse, admin                      | **Nurse Anita Roy ([nurse@example.com](mailto:nurse@example.com))** → Should view OPD patient list.                                      | **Receptionist Meena ([receptionist@example.com](mailto:receptionist@example.com))** → Should not access OPD.                  |
+| **IPD (Inpatient)**                 | `/ipd`                  | doctor, nurse, admin                      | **Dr. Priya Sharma ([doctor@example.com](mailto:doctor@example.com))** → Can admit or discharge patients.                                | **Pharmacist Kiran ([pharmacist@example.com](mailto:pharmacist@example.com))** → Access denied.                                |
+| **Emergency & Trauma**              | `/emergency`            | doctor, nurse, receptionist, admin        | **Receptionist Meena ([receptionist@example.com](mailto:receptionist@example.com))** → Should register emergency cases.                  | **Billing Executive Suresh ([billing@example.com](mailto:billing@example.com))** → Denied.                                     |
+| **EMR (Electronic Medical Record)** | `/emr`                  | doctor, nurse, admin                      | **Dr. Priya Sharma ([doctor@example.com](mailto:doctor@example.com))** → Can view and update EMR.                                        | **Lab Technician Ravi ([labtech@example.com](mailto:labtech@example.com))** → Cannot access.                                   |
+| **CPOE (Physician Orders)**         | `/cpoe`                 | doctor, nurse, labtech, pharmacist, admin | **Pharmacist Kiran ([pharmacist@example.com](mailto:pharmacist@example.com))** → Can view doctor orders for dispensing.                  | **Billing Executive Suresh ([billing@example.com](mailto:billing@example.com))** → Denied.                                     |
+| **Pharmacy**                        | `/pharmacy`             | pharmacist, admin                         | **Pharmacist Kiran ([pharmacist@example.com](mailto:pharmacist@example.com))** → Can manage drug inventory and dispensing.               | **Receptionist Meena ([receptionist@example.com](mailto:receptionist@example.com))** → Access denied.                          |
+| **Laboratory (LIS)**                | `/laboratory`           | labtech, doctor, admin                    | **Lab Technician Ravi ([labtech@example.com](mailto:labtech@example.com))** → Can process lab test orders.                               | **Billing Executive Suresh ([billing@example.com](mailto:billing@example.com))** → Denied.                                     |
+| **Radiology (RIS)**                 | `/radiology`            | labtech, doctor, admin                    | **Dr. Priya Sharma ([doctor@example.com](mailto:doctor@example.com))** → Can view and order scans.                                       | **Pharmacist Kiran ([pharmacist@example.com](mailto:pharmacist@example.com))** → Denied.                                       |
+| **OT Management**                   | `/ot-management`        | doctor, nurse, admin                      | **Nurse Anita Roy ([nurse@example.com](mailto:nurse@example.com))** → Can update pre-op checklist.                                       | **Receptionist Meena ([receptionist@example.com](mailto:receptionist@example.com))** → Denied.                                 |
+| **Billing & Invoicing**             | `/billing`              | billing, admin                            | **Billing Executive Suresh ([billing@example.com](mailto:billing@example.com))** → Can generate invoices.                                | **Dr. Priya Sharma ([doctor@example.com](mailto:doctor@example.com))** → Denied.                                               |
+| **Inventory Management**            | `/inventory`            | admin                                     | **IT Admin Rohan ([admin@example.com](mailto:admin@example.com))** → Can manage stock and reorders.                                      | **Nurse Anita Roy ([nurse@example.com](mailto:nurse@example.com))** → Denied.                                                  |
+| **Master Config / Admin Console**   | `/master-config`        | admin                                     | **IT Admin Rohan ([admin@example.com](mailto:admin@example.com))** → Can configure departments, charges, etc.                            | **Pharmacist Kiran ([pharmacist@example.com](mailto:pharmacist@example.com))** → Denied.                                       |
+| **RBAC & Audit Logs**               | `/rbac-audit`           | admin                                     | **IT Admin Rohan ([admin@example.com](mailto:admin@example.com))** → Can view audit logs and modify roles.                               | **Dr. Priya Sharma ([doctor@example.com](mailto:doctor@example.com))** → Denied.                                               |
+| **Reports & Analytics**             | `/reports-analytics`    | admin                                     | **IT Admin Rohan ([admin@example.com](mailto:admin@example.com))** → Should access analytics dashboard.                                  | **Receptionist Meena ([receptionist@example.com](mailto:receptionist@example.com))** → Denied.                                 |
+| **Patient Portal**                  | `/patient-portal`       | patient, admin                            | Create new **Patient user (signup)** → Should access own medical data.                                                                   | **Dr. Priya Sharma ([doctor@example.com](mailto:doctor@example.com))** → Denied.                                               |
+| **Queue Management**                | `/queue-management`     | receptionist, admin                       | **Receptionist Meena ([receptionist@example.com](mailto:receptionist@example.com))** → Should manage OPD queues.                         | **Lab Technician Ravi ([labtech@example.com](mailto:labtech@example.com))** → Denied.                                          |
+| **Notifications**                   | `/notifications`        | admin                                     | **IT Admin Rohan ([admin@example.com](mailto:admin@example.com))** → Can configure SMS/email alerts.                                     | **Nurse Anita Roy ([nurse@example.com](mailto:nurse@example.com))** → Denied.                                                  |
+| **Feedback & CRM**                  | `/feedback-crm`         | admin                                     | **IT Admin Rohan ([admin@example.com](mailto:admin@example.com))** → Can view patient feedbacks.                                         | **Billing Executive Suresh ([billing@example.com](mailto:billing@example.com))** → Denied.                                     |
 
-```bash
-ng serve
-```
+---
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+### 🧩 How to Test Role Guards (`AuthGuard` + `RoleGuard`)
 
-## Code scaffolding
+1. **Login Simulation**
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+   * Use each test user’s credentials (`email`, `password`) to log in.
+   * The system stores token & role in `localStorage` (or session storage).
 
-```bash
-ng generate component component-name
-```
+2. **Navigate to each route manually**
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+   * Example: after login as `receptionist@example.com`, try `/billing`.
+   * Expected → Redirect to `/unauthorized` or show “Access Denied”.
 
-```bash
-ng generate --help
-```
+3. **Automated Route Testing (Angular Example)**
 
-## Building
+   ```bash
+   ng g c pages/patient-registration
+   ng g c pages/appointments
+   ng g c pages/opd
+   ...
+   ng g c pages/feedback-crm
+   ```
 
-To build the project run:
+4. **Use in `app-routing.module.ts`:**
 
-```bash
-ng build
-```
+   ```ts
+   {
+     path: 'patient-registration',
+     component: PatientRegistrationComponent,
+     canActivate: [AuthGuard, RoleGuard],
+     data: { roles: ['receptionist', 'admin'] }
+   },
+   {
+     path: 'billing',
+     component: BillingComponent,
+     canActivate: [AuthGuard, RoleGuard],
+     data: { roles: ['billing', 'admin'] }
+   }
+   ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+5. **Expected Outputs:**
 
-## Running unit tests
+   * ✅ Authorized roles → Access page content.
+   * ❌ Unauthorized → Redirect to `/unauthorized` page.
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+---
 
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Would you like me to generate the **Angular route commands + dummy Tailwind pages** automatically for these 20 modules (so you can copy-paste them directly)?
