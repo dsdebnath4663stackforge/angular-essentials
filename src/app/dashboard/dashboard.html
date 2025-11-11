@@ -1,45 +1,43 @@
-<div class="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6">
-    <div class="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 transition hover:shadow-xl">
-        <h2 class="text-2xl font-bold text-center text-indigo-600 mb-6">
-            🔐 {{ profile?.message || 'Loading...' }} </h2>
-
-        <!-- Loading -->
-        <div *ngIf="!profile && !error" class="text-gray-500 text-center py-4">
-            Loading your profile...
+<div class="min-h-screen bg-slate-50">
+    <div class="max-w-5xl mx-auto px-4 py-8">
+        <div class="bg-white rounded-2xl shadow-md p-6 flex justify-between items-center mb-6">
+            <div>
+                <h1 class="text-2xl font-semibold text-slate-800">
+                    Hi, <span class="text-blue-600" *ngIf="profile as p">
+                        {{ getUserName(p.user.email) }}
+                    </span>
+                </h1>
+                <p class="text-slate-500 text-sm mt-1">
+                    Welcome to your secure dashboard.
+                </p>
+            </div>
+            <button (click)="logout()"
+                class="px-4 py-2 rounded-lg bg-red-500 text-white text-sm hover:bg-red-600 transition">
+                Logout
+            </button>
         </div>
 
-        <!-- Error -->
-        <div *ngIf="error" class="text-red-500 text-center mb-4">
+        <div *ngIf="error" class="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-xl mb-4">
             {{ error }}
         </div>
 
-        <!-- Profile Data -->
-        <div *ngIf="profile" class="space-y-4">
-            <div class="flex items-center justify-center">
-                <div
-                    class="h-16 w-16 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-2xl font-semibold">
-                    {{ getUserName(profile.user.email) | titlecase }}
-
-
-                </div>
+        <div *ngIf="profile" class="grid md:grid-cols-2 gap-4">
+            <div class="bg-white rounded-2xl shadow-sm p-4">
+                <h2 class="text-sm font-semibold text-slate-700 mb-2">Profile Info</h2>
+                <p class="text-xs text-slate-500">
+                    <span class="font-semibold">Email:</span> {{ profile.user.email }}
+                </p>
+                <p class="text-xs text-slate-500 mt-1">
+                    <span class="font-semibold">Role:</span> {{ profile.user.role || 'N/A' }}
+                </p>
             </div>
 
-            <div class="text-center">
-                <h3 class="text-xl font-semibold text-gray-800">{{ profile.user.exp }}</h3>
-                <p class="text-gray-500">{{ profile.user.iat }}</p>
+            <div class="bg-white rounded-2xl shadow-sm p-4">
+                <h2 class="text-sm font-semibold text-slate-700 mb-2">Message</h2>
+                <p class="text-xs text-slate-500">
+                    {{ profile.message }}
+                </p>
             </div>
-
-            <div class="border-t border-gray-200 pt-4">
-                <pre class="bg-gray-100 text-gray-600 p-4 rounded-lg text-sm overflow-x-auto">{{ profile | json }}</pre>
-            </div>
-        </div>
-
-        <!-- Logout Button -->
-        <div class="mt-8 text-center">
-            <button (click)="logout()"
-                class="px-6 py-2 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 transition">
-                Logout
-            </button>
         </div>
     </div>
 </div>

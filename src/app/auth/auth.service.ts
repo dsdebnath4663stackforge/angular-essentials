@@ -24,6 +24,7 @@ export interface Profile {
         email: string;
         iat: number;
         exp: number;
+        role?: string; // optional, if backend sends
     };
 }
 
@@ -34,6 +35,7 @@ export class AuthService {
 
     // Point this to your mock backend (json-server / mock API / local Node app)
     private readonly apiBase = 'http://localhost:3000';
+    private readonly tokenKey = 'access_token';
 
     constructor(private http: HttpClient) { }
 
@@ -41,7 +43,7 @@ export class AuthService {
         return this.http.post<AuthResponse>(`${this.apiBase}/login`, payload).pipe(
             tap(res => {
                 if (res?.token) {
-                    localStorage.setItem('access_token', res.token);
+                    localStorage.setItem(this.tokenKey, res.token);
                 }
             })
         );
@@ -52,7 +54,7 @@ export class AuthService {
             tap(res => {
                 // optional: auto login on signup
                 if (res?.token) {
-                    localStorage.setItem('access_token', res.token);
+                    localStorage.setItem(this.tokenKey, res.token);
                 }
             })
         );
@@ -63,14 +65,53 @@ export class AuthService {
     }
 
     getToken(): string | null {
-        return localStorage.getItem('access_token');
+        return localStorage.getItem(this.tokenKey);
     }
 
+
+    // ✅ Safely decode JWT
+    private decodeToken(token: string): any | null {
+        try {
+            const payload = token.split('.')[1];
+            if (!payload) return null;
+            return JSON.parse(atob(payload));
+        } catch (e) {
+            console.error('Invalid token payload', e);
+            return null;
+        }
+    }
+    // ✅ Check exp
+    private isTokenExpired(token: string): boolean {
+        const payload = this.decodeToken(token);
+        if (!payload || !payload.exp) return true;
+        const now = Math.floor(Date.now() / 1000);
+        return payload.exp < now;
+    }
+
+
     isLoggedIn(): boolean {
-        return !!this.getToken();
+        const token = this.getToken();
+        if (!token) return false;
+        if (this.isTokenExpired(token)) {
+            this.logout();
+            return false;
+        }
+        return true;
+    }
+    // ✅ Extract role for RoleGuard
+    getRole(): string | null {
+        const token = this.getToken();
+        if (!token) return null;
+        const payload = this.decodeToken(token);
+        // support multiple shapes
+        return (
+            payload?.role ||
+            payload?.user?.role ||
+            null
+        );
     }
 
     logout(): void {
-        localStorage.removeItem('access_token');
+        localStorage.removeItem(this.tokenKey);
     }
 }

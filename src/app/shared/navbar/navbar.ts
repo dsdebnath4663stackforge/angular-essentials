@@ -15,6 +15,7 @@ import { AuthService } from '../../auth/auth.service';
           <a routerLink="/login" class="hover:text-gray-200">Login</a>
           <a routerLink="/signup" class="hover:text-gray-200">Signup</a>
           <a routerLink="/dashboard" class="hover:text-gray-200">Dashboard</a>
+                    <a routerLink="/patient-registration" class="hover:text-gray-200">patient-registration</a>
           <a routerLink="/admin" class="hover:text-gray-200">Admin</a>
           <button *ngIf="authService.isLoggedIn()" 
                   (click)="logout()" 
@@ -26,7 +27,8 @@ import { AuthService } from '../../auth/auth.service';
     </nav>
   `
 })
-export class NavbarComponent {
+export class
+  NavbarComponent {
   constructor(public authService: AuthService) { }
 
   logout(): void {
