@@ -6,12 +6,14 @@ import { Routes } from '@angular/router';
 // import { UnauthorizedComponent } from './pages/unauthorized/unauthorized.component';
 import { AuthGuard } from './auth/auth.guard';
 import { RoleGuard } from './auth/role.guard';
-import { LoginComponent } from './auth/login/login';
+ import { LoginComponent } from './auth/login/login';
 import { DashboardComponent } from './dashboard/dashboard';
 import { SignupComponent } from './auth/signup/signup';
 import { UnauthorizedComponent } from './pages/unauthorized/unauthorized';
 import { AdminComponent } from './admin/admin';
 import { PatientRegistrationComponent } from './hms/patient-registration/patient-registration';
+import { AppointmentSchedulingComponent } from './hms/appointment-scheduling/appointment-scheduling';
+import { OpdComponent } from './hms/opd/opd';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -38,6 +40,18 @@ export const routes: Routes = [
         component: PatientRegistrationComponent,
         canActivate: [AuthGuard, RoleGuard],
         data: { role: ['receptionist', 'admin'] }
+    },
+    {
+        path: 'appointments',
+        component: AppointmentSchedulingComponent,
+        canActivate: [AuthGuard, RoleGuard],
+        data: { role: ['receptionist', 'doctor', 'admin'] }
+    },
+    {
+        path: 'opd',
+        component: OpdComponent,
+        canActivate: [AuthGuard, RoleGuard],
+        data: { role: ['doctor', 'nurse', 'admin'] }
     },
 
     { path: 'unauthorized', component: UnauthorizedComponent },
