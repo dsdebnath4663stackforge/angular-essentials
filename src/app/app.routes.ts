@@ -1,178 +1,69 @@
+// ✅ Import necessary Angular Router features
 import { Routes } from '@angular/router';
-// import { LoginComponent } from './auth/login/login.component';
-// import { SignupComponent } from './auth/signup/signup.component';
-// import { DashboardComponent } from './dashboard/dashboard.component';
-// import { AdminComponent } from './admin/admin.component';
-// import { UnauthorizedComponent } from './pages/unauthorized/unauthorized.component';
+
+// ✅ Import custom route guards
 import { AuthGuard } from './auth/auth.guard';
 import { RoleGuard } from './auth/role.guard';
+
+// ✅ Import components for public routes
 import { LoginComponent } from './auth/login/login';
-import { DashboardComponent } from './dashboard/dashboard';
 import { SignupComponent } from './auth/signup/signup';
 import { UnauthorizedComponent } from './pages/unauthorized/unauthorized';
-import { AdminComponent } from './admin/admin';
-import { PatientRegistrationComponent } from './hms/patient-registration/patient-registration';
-import { AppointmentSchedulingComponent } from './hms/appointment-scheduling/appointment-scheduling';
-import { OpdComponent } from './hms/opd/opd';
-import { IpdComponent } from './hms/ipd/ipd';
-import { EmergencyComponent } from './hms/emergency/emergency';
-import { EmrComponent } from './hms/emr/emr';
-import { CpoeComponent } from './hms/cpoe/cpoe';
-import { PharmacyComponent } from './hms/pharmacy/pharmacy';
-import { LaboratoryComponent } from './hms/laboratory/laboratory';
-import { RadiologyComponent } from './hms/radiology/radiology';
-import { OtManagementComponent } from './hms/ot-management/ot-management';
-import { Billing } from './hms/billing/billing';
-import { Inventory } from './hms/inventory/inventory';
-import { FeedbackCrm } from './hms/feedback-crm/feedback-crm';
-import { MasterConfig } from './hms/master-config/master-config';
-import { Notifications } from './hms/notifications/notifications';
-import { PatientPortal } from './hms/patient-portal/patient-portal';
-import { QueueManagement } from './hms/queue-management/queue-management';
-import { RbacAudit } from './hms/rbac-audit/rbac-audit';
-import { ReportsAnalytics } from './hms/reports-analytics/reports-analytics';
 
-
+// ✅ Define all application routes here
 export const routes: Routes = [
+
+    // 🔹 Default route → redirect to login page
     { path: '', redirectTo: 'login', pathMatch: 'full' },
 
+    // 🔹 Public routes (no login required)
     { path: 'login', component: LoginComponent },
     { path: 'signup', component: SignupComponent },
 
-    { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
-    { path: 'admin', component: AdminComponent, canActivate: [AuthGuard, RoleGuard], data: { role: 'admin' } },
-
-    // 🔹 Core Clinical & Patient Flow
+    // 🔹 Protected: Dashboard (only requires login)
+    // Anyone who is authenticated can access this route
     {
-        path: 'patient-registration',
-        component: PatientRegistrationComponent,
-        canActivate: [AuthGuard, RoleGuard],
-        data: { role: ['receptionist', 'admin'] }
-    },
-    {
-        path: 'appointments',
-        component: AppointmentSchedulingComponent,
-        canActivate: [AuthGuard, RoleGuard],
-        data: { role: ['receptionist', 'doctor', 'admin'] }
-    },
-    {
-        path: 'opd',
-        component: OpdComponent,
-        canActivate: [AuthGuard, RoleGuard],
-        data: { role: ['doctor', 'nurse', 'admin'] }
-    },
-    {
-        path: 'ipd',
-        component: IpdComponent,
-        canActivate: [AuthGuard, RoleGuard],
-        data: { role: ['doctor', 'nurse', 'admin'] }
-    },
-    {
-        path: 'emergency',
-        component: EmergencyComponent,
-        canActivate: [AuthGuard, RoleGuard],
-        data: { role: ['doctor', 'nurse', 'receptionist', 'admin'] }
-    },
-    {
-        path: 'emr',
-        component: EmrComponent,
-        canActivate: [AuthGuard, RoleGuard],
-        data: { role: ['doctor', 'nurse', 'admin'] }
-    },
-    {
-        path: 'cpoe',
-        component: CpoeComponent,
-        canActivate: [AuthGuard, RoleGuard],
-        data: { role: ['doctor', 'nurse', 'labtech', 'pharmacist', 'admin'] }
+        path: 'dashboard',
+        canActivate: [AuthGuard], // check if user is logged in
+        loadChildren: () =>
+            import('./features/dashboard/dashboard.routes')
+                .then(m => m.DASHBOARD_ROUTES)
     },
 
-    // 🔹 Diagnostics & Pharmacy
+    // 🔹 Admin Module (only for users with role = admin)
     {
-        path: 'pharmacy',
-        component: PharmacyComponent,
-        canActivate: [AuthGuard, RoleGuard],
-        data: { role: ['pharmacist', 'admin'] }
-    },
-    {
-        path: 'laboratory',
-        component: LaboratoryComponent,
-        canActivate: [AuthGuard, RoleGuard],
-        data: { role: ['labtech', 'doctor', 'admin'] }
-    },
-    {
-        path: 'radiology',
-        component: RadiologyComponent,
-        canActivate: [AuthGuard, RoleGuard],
-        data: { role: ['labtech', 'doctor', 'admin'] }
-    },
-    {
-        path: 'ot-management',
-        component: OtManagementComponent,
-        canActivate: [AuthGuard, RoleGuard],
-        data: { role: ['doctor', 'nurse', 'admin'] }
+        path: 'admin',
+        canActivate: [AuthGuard, RoleGuard], // check login + role
+        data: { role: 'admin' }, // expected role for this route
+        loadChildren: () =>
+            import('./features/admin/admin.routes')
+                .then(m => m.ADMIN_ROUTES)
     },
 
-    // 🔹 Billing & Commercial
+    // 🔹 Clinical Module (for Doctor/Nurse/Receptionist/Admin)
     {
-        path: 'billing',
-        component: Billing ,
+        path: 'clinical',
         canActivate: [AuthGuard, RoleGuard],
-        data: { role: ['billing', 'admin'] }
+        data: { role: ['doctor', 'nurse', 'receptionist', 'admin'] },
+        loadChildren: () =>
+            import('./features/clinical/clinical.routes')
+                .then(m => m.CLINICAL_ROUTES)
     },
 
-    // 🔹 Inventory & Admin
+    // 🔹 Diagnostics Module (for LabTech/Pharmacist/Doctor/Admin)
     {
-        path: 'inventory',
-        component: Inventory,
+        path: 'diagnostics',
         canActivate: [AuthGuard, RoleGuard],
-        data: { role: ['admin'] }
-    },
-    {
-        path: 'master-config',
-        component: MasterConfig,
-        canActivate: [AuthGuard, RoleGuard],
-        data: { role: ['admin'] }
-    },
-    {
-        path: 'rbac-audit',
-        component: RbacAudit,
-        canActivate: [AuthGuard, RoleGuard],
-        data: { role: ['admin'] }
+        data: { role: ['labtech', 'pharmacist', 'doctor', 'admin'] },
+        loadChildren: () =>
+            import('./features/diagnostics/diagnostics.routes')
+                .then(m => m.DIAGNOSTICS_ROUTES)
     },
 
-    // 🔹 Patient-facing & Experience
-    {
-        path: 'patient-portal',
-        component: PatientPortal,
-        canActivate: [AuthGuard, RoleGuard],
-        data: { role: ['patient', 'admin'] }
-    },
-    {
-        path: 'queue-management',
-        component: QueueManagement,
-        canActivate: [AuthGuard, RoleGuard],
-        data: { role: ['receptionist', 'admin'] }
-    },
-    {
-        path: 'notifications',
-        component: Notifications,
-        canActivate: [AuthGuard, RoleGuard],
-        data: { role: ['admin'] }
-    },
-    {
-        path: 'feedback-crm',
-        component: FeedbackCrm,
-        canActivate: [AuthGuard, RoleGuard],
-        data: { role: ['admin'] }
-    },
-    {
-        path: 'reports-analytics',
-        component: ReportsAnalytics,
-        canActivate: [AuthGuard, RoleGuard],
-        data: { role: ['admin'] }
-    },
-
+    // 🔹 Unauthorized access page
+    // Shown when user tries to access restricted route
     { path: 'unauthorized', component: UnauthorizedComponent },
 
+    // 🔹 Wildcard route → redirect unknown URLs to login
     { path: '**', redirectTo: 'login' }
 ];
